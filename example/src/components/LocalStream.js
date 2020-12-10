@@ -20,7 +20,7 @@ export default function LocalStream({ userMedia }) {
   return (
     <div>
       <video
-        style={{ width: 400, height: 400 }}
+        style={{ width: 300, height: 300, position: 'absolute', top: 30 }}
         onContextMenu={(event) => event.preventDefault()}
         ref={videoRef}
         onCanPlay={handleCanPlay}

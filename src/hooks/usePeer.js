@@ -8,6 +8,8 @@ function getRandomId() {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+let streamAnswer = null
+
 export default function usePeer() {
   const [myPeer, setPeer] = useState(null)
   const [myPeerID, setMyPeerID] = useState(null)
@@ -27,6 +29,20 @@ export default function usePeer() {
     setMyPeerID(null)
   }
 
+  const toggleMuteVideo = () => {
+    if (streamAnswer) {
+      streamAnswer.getVideoTracks()[0].enabled = !streamAnswer.getVideoTracks()[0]
+        .enabled
+    }
+  }
+
+  const toggleMuteAudio = () => {
+    if (streamAnswer) {
+      streamAnswer.getAudioTracks()[0].enabled = !streamAnswer.getAudioTracks()[0]
+        .enabled
+    }
+  }
+
   useEffect(() => {
     const peer = new Peer(getRandomId())
 
@@ -41,6 +57,7 @@ export default function usePeer() {
         .then((stream) => {
           // Answer the call with an A/V stream.
           call.answer(stream)
+          streamAnswer = stream
 
           // Play the remote stream
           call.on('stream', (remoteStream) => {
@@ -78,6 +95,8 @@ export default function usePeer() {
   return {
     peer: myPeer,
     peerId: myPeerID,
-    remoteStreamsListener
+    remoteStreamsListener,
+    answerToggleMuteVideo: toggleMuteVideo,
+    answerToggleMuteAudio: toggleMuteAudio
   }
 }

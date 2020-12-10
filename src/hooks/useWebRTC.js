@@ -1,7 +1,7 @@
 import useUserMedia from './useUserMedia'
 import useUserShareScreen from './useUserShareScreen'
 import useRemoteStreams from './useRemoteStream'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 let call = null
 
@@ -51,30 +51,54 @@ export function useWebRTC() {
   }
 
   const replaceStream = (stream) => {
-    if (call.peerConnection.getSenders()) {
-      for (const sender of call.peerConnection.getSenders()) {
-        // if (sender.track.kind == 'audio') {
-        //   if (stream.getAudioTracks().length > 0) {
-        //     sender.replaceTrack(stream.getAudioTracks()[0])
-        //   }
-        // }
-        if (sender.track.kind == 'video') {
-          if (stream.getVideoTracks().length > 0) {
-            sender.replaceTrack(stream.getVideoTracks()[0])
+    try {
+      if (call.peerConnection && call.peerConnection.getSenders()) {
+        for (const sender of call.peerConnection.getSenders()) {
+          // if (sender.track.kind == 'audio') {
+          //   if (stream.getAudioTracks().length > 0) {
+          //     sender.replaceTrack(stream.getAudioTracks()[0])
+          //   }
+          // }
+          if (sender.track.kind == 'video') {
+            if (stream.getVideoTracks().length > 0) {
+              sender.replaceTrack(stream.getVideoTracks()[0])
+            }
           }
         }
       }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const toggleMuteAudio = () => {
+    if (mediaStream) {
+      mediaStream.getAudioTracks()[0].enabled = !mediaStream.getAudioTracks()[0]
+        .enabled
+    }
+  }
+
+  const toggleMuteVideo = () => {
+    if (mediaStream) {
+      mediaStream.getVideoTracks()[0].enabled = !mediaStream.getVideoTracks()[0]
+        .enabled
+    }
+
+    if (screenStream) {
+      screenStream.getVideoTracks()[0].enabled = !screenStream.getVideoTracks()[0]
+        .enabled
     }
   }
 
   return {
-    mediaStream,
-    screenStream,
+    localStream: mediaStream || screenStream,
     remoteStreams,
     startMediaStream,
     stopMediaStream,
     shareScreenStream,
     stopShareScreenStream,
+    toggleMuteAudio,
+    toggleMuteVideo,
     callPeer
   }
 }

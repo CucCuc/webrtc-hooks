@@ -15,7 +15,7 @@ export default function RemoteStream({ remoteStreams }) {
       {remoteStreams.map((dataStream, i, arr) => (
         <div key={dataStream.peerId}>
           <video
-            style={{ width: 400, height: 400 }}
+            style={{ width: '100%', height: 600, backgroundColor: 'black' }}
             onContextMenu={(event) => event.preventDefault()}
             ref={(ref) => (refsArray.current[dataStream.peerId] = ref)}
             autoPlay
