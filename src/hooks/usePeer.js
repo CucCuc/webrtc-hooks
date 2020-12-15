@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Peer from 'peerjs'
 import useRemoteStreams from './useRemoteStream'
 
 function getRandomId() {
@@ -44,7 +43,8 @@ export default function usePeer() {
   }
 
   useEffect(() => {
-    const peer = new Peer(getRandomId())
+    const { peerjs } = require('peerjs')
+    const peer = new peerjs.Peer(getRandomId())
 
     peer.on('open', () => {
       setPeer(peer)
