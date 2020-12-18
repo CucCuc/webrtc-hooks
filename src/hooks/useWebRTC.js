@@ -1,7 +1,7 @@
 import useUserMedia from './useUserMedia'
 import useUserShareScreen from './useUserShareScreen'
 import useRemoteStreams from './useRemoteStream'
-import { useEffect, useState } from 'react'
+import { useEffect, useCallback } from 'react'
 
 let call = null
 
@@ -21,6 +21,16 @@ export function useWebRTC() {
   ] = useRemoteStreams()
 
   useEffect(() => {
+    if (screenStream) {
+      screenStream.getVideoTracks()[0].onended = function () {
+        stopShareScreenStream()
+        startMediaStream()
+        // doWhatYouNeedToDo();
+      }
+    }
+  }, [screenStream])
+
+  useEffect(() => {
     if (screenStream && call) {
       replaceStream(screenStream)
     }
@@ -32,23 +42,25 @@ export function useWebRTC() {
     }
   }, [mediaStream])
 
-  const callPeer = (peer, remoteid) => {
-    call = peer.call(remoteid, mediaStream)
+  const callPeer = useCallback(() => {
+    ;(peer, remoteid) => {
+      call = peer.call(remoteid, mediaStream)
 
-    call.on('stream', (remoteStream) => {
-      addRemoteStream(remoteStream, call.peer)
-    })
+      call.on('stream', (remoteStream) => {
+        addRemoteStream(remoteStream, call.peer)
+      })
 
-    call.on('close', () => {
-      removeRemoteStream(call.peer)
-      call.close()
-    })
+      call.on('close', () => {
+        removeRemoteStream(call.peer)
+        call.close()
+      })
 
-    call.on('error', (error) => {
-      removeRemoteStream(call.peer)
-      call.close()
-    })
-  }
+      call.on('error', (error) => {
+        removeRemoteStream(call.peer)
+        call.close()
+      })
+    }
+  })
 
   const replaceStream = (stream) => {
     try {
