@@ -17,10 +17,10 @@ export default function useUserMedia() {
 
   const stopMediaStream = () => {
     if (mediaStream) {
-      setMediaStream(null)
       try {
         mediaStream.getVideoTracks()[0].enabled = false
         mediaStream.getAudioTracks()[0].enabled = false
+        setMediaStream(null)
       } catch (error) {
         console.log(error)
       }
@@ -28,17 +28,15 @@ export default function useUserMedia() {
   }
 
   const startMediaStream = async (callback = () => {}) => {
-    if (!mediaStream) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: true
-        })
-        setMediaStream(stream)
-        callback()
-      } catch (error) {
-        console.log(error)
-      }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true
+      })
+      setMediaStream(stream)
+      callback()
+    } catch (error) {
+      console.log(error)
     }
   }
 
