@@ -42,25 +42,23 @@ export function useWebRTC() {
     }
   }, [mediaStream])
 
-  const callPeer = useCallback(() => {
-    ;(peer, remoteid) => {
-      call = peer.call(remoteid, mediaStream)
+  const callPeer = (peer, remoteid) => {
+    call = peer.call(remoteid, mediaStream)
 
-      call.on('stream', (remoteStream) => {
-        addRemoteStream(remoteStream, call.peer)
-      })
+    call.on('stream', (remoteStream) => {
+      addRemoteStream(remoteStream, call.peer)
+    })
 
-      call.on('close', () => {
-        removeRemoteStream(call.peer)
-        call.close()
-      })
+    call.on('close', () => {
+      removeRemoteStream(call.peer)
+      call.close()
+    })
 
-      call.on('error', (error) => {
-        removeRemoteStream(call.peer)
-        call.close()
-      })
-    }
-  })
+    call.on('error', (error) => {
+      removeRemoteStream(call.peer)
+      call.close()
+    })
+  }
 
   const replaceStream = (stream) => {
     try {

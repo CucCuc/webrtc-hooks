@@ -17,8 +17,13 @@ export default function useUserMedia() {
 
   const stopMediaStream = () => {
     if (mediaStream) {
-      mediaStream.getVideoTracks()[0].stop()
       setMediaStream(null)
+      try {
+        mediaStream.getVideoTracks()[0].enabled = false
+        mediaStream.getAudioTracks()[0].enabled = false
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
